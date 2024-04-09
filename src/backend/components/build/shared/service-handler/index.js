@@ -22,8 +22,8 @@ const servicesInfo = {
     database: {
         port: 3000,
     },
-    account: {
-        port: 3001,
+    dron: {
+        port: 3005,
     },
 };
 exports.AppEvent = zod_1.z.object({

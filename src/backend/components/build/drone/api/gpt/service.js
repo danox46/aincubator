@@ -20,13 +20,17 @@ dotenv_1.default.config();
 class GptService {
     constructor() {
         this.chat = (messages, model = "gpt-3.5-turbo-0125") => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c;
             const completion = yield shared_1.HttpClient.post("https://api.openai.com/v1/chat/completions", {
                 model,
                 messages,
             }, {
                 Authorization: `Bearer ${process.env.API_KEY}`,
             });
-            console.log(completion);
+            console.log({
+                promt: (_a = messages[0]) === null || _a === void 0 ? void 0 : _a.content,
+                completion: (_c = (_b = completion === null || completion === void 0 ? void 0 : completion.choices[0]) === null || _b === void 0 ? void 0 : _b.message) === null || _c === void 0 ? void 0 : _c.content,
+            });
             return completion;
         });
         this.listen = (event) => __awaiter(this, void 0, void 0, function* () {

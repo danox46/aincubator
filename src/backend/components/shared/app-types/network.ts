@@ -3,7 +3,6 @@ import { ServiceHandler } from "../service-handler";
 import { HttpStatusCode } from "../http-client";
 import CircularJSON from "circular-json";
 import dotenv from "dotenv";
-import { UserPolicy } from "./policy";
 import { z } from "zod";
 dotenv.config();
 
@@ -84,7 +83,6 @@ export const Credentials = z.object({
   username: z.string().min(1),
   password: z.string().min(1),
   accountId: z.string().optional(),
-  userPolicy: UserPolicy.optional(),
 });
 
 export type Credentials = z.infer<typeof Credentials>;

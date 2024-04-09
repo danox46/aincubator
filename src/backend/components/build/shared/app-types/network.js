@@ -18,7 +18,6 @@ const http_client_1 = require("../http-client");
 Object.defineProperty(exports, "HttpStatusCode", { enumerable: true, get: function () { return http_client_1.HttpStatusCode; } });
 const circular_json_1 = __importDefault(require("circular-json"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const policy_1 = require("./policy");
 const zod_1 = require("zod");
 dotenv_1.default.config();
 var service_handler_2 = require("../service-handler");
@@ -69,6 +68,5 @@ exports.Credentials = zod_1.z.object({
     username: zod_1.z.string().min(1),
     password: zod_1.z.string().min(1),
     accountId: zod_1.z.string().optional(),
-    userPolicy: policy_1.UserPolicy.optional(),
 });
 //# sourceMappingURL=network.js.map

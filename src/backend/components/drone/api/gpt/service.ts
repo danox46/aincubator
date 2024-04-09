@@ -17,7 +17,10 @@ export class GptService {
         Authorization: `Bearer ${process.env.API_KEY}`,
       }
     );
-    console.log(completion);
+    console.log({
+      promt: messages[0]?.content,
+      completion: completion?.choices[0]?.message?.content,
+    });
     return completion;
   };
 

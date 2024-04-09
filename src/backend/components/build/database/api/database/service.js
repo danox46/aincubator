@@ -26,7 +26,7 @@ class DatabaseService extends app_types_1.AppObject {
         this.db = null;
         this.connect = () => __awaiter(this, void 0, void 0, function* () {
             if (!this.db) {
-                const client = yield mongodb_1.MongoClient.connect(process.env.DB_URL || "mongodb://127.0.0.1:27017/nutrition-app");
+                const client = yield mongodb_1.MongoClient.connect(process.env.DB_URL || "mongodb://127.0.0.1:27017/test");
                 this.db = client.db();
             }
             return this.db;

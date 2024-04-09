@@ -4,7 +4,7 @@ import { Confirmation } from "../app-types/network";
 import { z } from "zod";
 dotenv.config();
 
-type ServiceName = "database" | "account";
+type ServiceName = "database" | "dron";
 
 type AppServiceInfo = {
   [K in ServiceName]: { port: number };
@@ -14,8 +14,8 @@ const servicesInfo: AppServiceInfo = {
   database: {
     port: 3000,
   },
-  account: {
-    port: 3001,
+  dron: {
+    port: 3005,
   },
 };
 

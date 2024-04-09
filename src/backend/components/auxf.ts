@@ -1,6 +1,9 @@
-import { ServiceHandler } from "./shared/service-handler";
+import { InstructionService } from "./manager/api/instruction/service";
 
-ServiceHandler.subscribeToEvent({
-  serivce: "account",
-  eventName: "user-unsubscribed",
-});
+const service = new InstructionService();
+
+const main = async () => {
+  await service.startProject();
+};
+
+main();

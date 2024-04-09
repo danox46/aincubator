@@ -23,7 +23,7 @@ export class DatabaseService extends AppObject {
   private connect = async (): Promise<Db> => {
     if (!this.db) {
       const client = await MongoClient.connect(
-        process.env.DB_URL || "mongodb://127.0.0.1:27017/nutrition-app"
+        process.env.DB_URL || "mongodb://127.0.0.1:27017/test"
       );
       this.db = client.db();
     }

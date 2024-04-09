@@ -1,4 +1,3 @@
-import { AppObjectPolicy, ContentType, PaymentPlan } from "./policy";
 import { AppEvent, ServiceHandler } from "../service-handler";
 import { z } from "zod";
 
@@ -12,7 +11,6 @@ export const AppRecord = z.record(z.string(), z.any());
 export type AppRecord = z.infer<typeof AppRecord>;
 
 export interface IObjectInfo extends Record<string, any> {
-  objectPolicy?: AppObjectPolicy | undefined;
   name?: string;
   _id?: any;
 }
