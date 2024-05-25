@@ -6,12 +6,17 @@ dotenv.config();
 export class GptService {
   constructor() {}
 
-  chat = async (messages: Array<any>, model: string = "gpt-3.5-turbo-0125") => {
+  chat = async (
+    messages: Array<any>,
+    model: string = "gpt-3.5-turbo",
+    temperature = 0.4
+  ) => {
     const completion = await HttpClient.post(
       "https://api.openai.com/v1/chat/completions",
       {
         model,
         messages,
+        temperature,
       },
       {
         Authorization: `Bearer ${process.env.API_KEY}`,

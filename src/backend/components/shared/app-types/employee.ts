@@ -10,7 +10,7 @@ export class Employee {
     const content =
       "Pretend you are a " +
       role +
-      " planing a startup, We need a list of steps to finish " +
+      " planing a startup, We need a list of steps to finish this deliverable asume all research has been done, we're just working on the document for " +
       instruction +
       " only return a js array with the steps we would need to take to finish the document";
 
@@ -42,11 +42,11 @@ export class Employee {
             this.role.name +
             " which means you " +
             this.role.description +
-            " Right now, we're working on: " +
+            " Right now, we're working on a comprehensive: " +
             deliverable +
             " In this step we need you to: " +
             step +
-            " Only send the requested content in Markdown format, it will be appended to a file.";
+            " Only send the requested content, nothing else. Skip presentations and smalltalk";
           const initialTry: any = await ServiceHandler.post(
             "/gpt/chat",
             "dron",
@@ -70,8 +70,9 @@ export class Employee {
                 this.role.name +
                 " of the company is working on " +
                 step +
-                " he needs your feedback, here is his current attempt: " +
-                reviewedDoc;
+                " he needs your feedback, send a list of actionable items and nothing else. Here is his current attempt: " +
+                reviewedDoc +
+                ". Make it as if you were writing a promnt for yourself";
 
               const feedback: any = await ServiceHandler.post(
                 "/gpt/chat",
@@ -80,6 +81,8 @@ export class Employee {
                   messages: [{ role: "user", content: feedbackContent }],
                 }
               );
+
+              const feedbackMessage = feedback.choices[0].message.content;
 
               const currentReview: any = await ServiceHandler.post(
                 "/gpt/chat",
@@ -93,8 +96,8 @@ export class Employee {
                         "here is the feedback from " +
                         member.role.name +
                         " " +
-                        feedback.choices[0].message.content +
-                        "Please address the recommendations on the current version and Only send the new version in markdown format, it will be appended to a file.",
+                        feedbackMessage +
+                        "Please address the recommendations on the current version, don't change the title section, don't include the feedback in the response, don't address the one giving you feedback, and Only send the new version, nothing else.",
                     },
                   ],
                 }
@@ -104,10 +107,36 @@ export class Employee {
             }
           }
 
-          record = record + reviewedDoc;
+          record = record + "\n" + reviewedDoc;
         }
+        const proofreading: any = await ServiceHandler.post(
+          "/gpt/chat",
+          "dron",
+          {
+            messages: [
+              {
+                role: "user",
+                content:
+                  "I need you to help me proofread, take out any random notes, format, extract the different sections. The idea is to write a " +
+                  deliverable +
+                  "for a startup with the following information. Please only respond with the formated file and nothing else. Use html format. \n" +
+                  record,
+              },
+            ],
+          }
+        );
 
-        return record;
+        const formating: any = await ServiceHandler.post("/gpt/chat", "dron", {
+          messages: [
+            {
+              role: "user",
+              content:
+                "I need to fix this HTML file, please just send the fixed version of the file and nothing else" +
+                proofreading.choices[0].message.content,
+            },
+          ],
+        });
+        return formating.choices[0].message.content.replace("\n", "");
       })
     );
   };

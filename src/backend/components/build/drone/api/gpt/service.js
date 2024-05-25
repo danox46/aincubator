@@ -19,11 +19,12 @@ const shared_1 = require("../../../shared");
 dotenv_1.default.config();
 class GptService {
     constructor() {
-        this.chat = (messages, model = "gpt-3.5-turbo-0125") => __awaiter(this, void 0, void 0, function* () {
+        this.chat = (messages, model = "gpt-3.5-turbo", temperature = 0.4) => __awaiter(this, void 0, void 0, function* () {
             var _a, _b, _c;
             const completion = yield shared_1.HttpClient.post("https://api.openai.com/v1/chat/completions", {
                 model,
                 messages,
+                temperature,
             }, {
                 Authorization: `Bearer ${process.env.API_KEY}`,
             });

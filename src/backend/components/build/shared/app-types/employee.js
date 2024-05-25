@@ -22,7 +22,7 @@ class Employee {
         _Employee_plan.set(this, (instruction, role) => __awaiter(this, void 0, void 0, function* () {
             const content = "Pretend you are a " +
                 role +
-                " planing a startup, We need a list of steps to finish " +
+                " planing a startup, We need a list of steps to finish this deliverable asume all research has been done, we're just working on the document for " +
                 instruction +
                 " only return a js array with the steps we would need to take to finish the document";
             const steps = yield service_handler_1.ServiceHandler.post("/gpt/chat", "dron", {
@@ -38,18 +38,18 @@ class Employee {
                 Object.keys(staff).map((e) => staff[e].role.name);
             return yield Promise.all(this.role.deliverables.map((deliverable) => __awaiter(this, void 0, void 0, function* () {
                 const steps = yield __classPrivateFieldGet(this, _Employee_plan, "f").call(this, deliverable, this.role.name);
-                let record;
+                let record = "";
                 for (const step of steps) {
                     const content = premise +
                         " your role is " +
                         this.role.name +
                         " which means you " +
                         this.role.description +
-                        " Right now, we're working on: " +
+                        " Right now, we're working on a comprehensive: " +
                         deliverable +
                         " In this step we need you to: " +
                         step +
-                        " Only send the requested content in Markdown format, it will be appended to a file.";
+                        " Only send the requested content, nothing else. Skip presentations and smalltalk";
                     const initialTry = yield service_handler_1.ServiceHandler.post("/gpt/chat", "dron", {
                         messages: [{ role: "user", content }],
                     });
@@ -66,11 +66,13 @@ class Employee {
                                 this.role.name +
                                 " of the company is working on " +
                                 step +
-                                " he needs your feedback, here is his current attempt: " +
-                                reviewedDoc;
+                                " he needs your feedback, send a list of actionable items and nothing else. Here is his current attempt: " +
+                                reviewedDoc +
+                                ". Make it as if you were writing a promnt for yourself";
                             const feedback = yield service_handler_1.ServiceHandler.post("/gpt/chat", "dron", {
                                 messages: [{ role: "user", content: feedbackContent }],
                             });
+                            const feedbackMessage = feedback.choices[0].message.content;
                             const currentReview = yield service_handler_1.ServiceHandler.post("/gpt/chat", "dron", {
                                 messages: [
                                     { role: "assistant", content: reviewedDoc },
@@ -78,18 +80,38 @@ class Employee {
                                         role: "user",
                                         content: "here is the feedback from " +
                                             member.role.name +
-                                            " (Keep in mind this is an email, you can respond to him later, for now, lets work on the document) " +
-                                            feedback.choices[0].message.content +
-                                            "Please address the recommendations on the current version and Only send the new version in markdown format, it will be appended to a file. Only respond with the content to be appended",
+                                            " " +
+                                            feedbackMessage +
+                                            "Please address the recommendations on the current version, don't change the title section, don't include the feedback in the response, don't address the one giving you feedback, and Only send the new version, nothing else.",
                                     },
                                 ],
                             });
                             reviewedDoc = currentReview.choices[0].message.content;
                         }
                     }
-                    record = record + reviewedDoc;
+                    record = record + "\n" + reviewedDoc;
                 }
-                return record;
+                const proofreading = yield service_handler_1.ServiceHandler.post("/gpt/chat", "dron", {
+                    messages: [
+                        {
+                            role: "user",
+                            content: "I need you to help me proofread, take out any random notes, format, extract the different sections. The idea is to write a " +
+                                deliverable +
+                                "for a startup with the following information. Please only respond with the formated file and nothing else. Use html format. \n" +
+                                record,
+                        },
+                    ],
+                });
+                const formating = yield service_handler_1.ServiceHandler.post("/gpt/chat", "dron", {
+                    messages: [
+                        {
+                            role: "user",
+                            content: "I need to fix this HTML file, please just send the fixed version of the file and nothing else" +
+                                proofreading.choices[0].message.content,
+                        },
+                    ],
+                });
+                return formating.choices[0].message.content.replace("\n", "");
             })));
         });
         this.role = roleInfo[role];
